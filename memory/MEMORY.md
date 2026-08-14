@@ -11,11 +11,11 @@
 
 ## 当前进度
 
-> **popup 路由选择已完成并实机验证（2026-08-14 晚）；WebUI 设置选项卡「能力描述 + 子代理开关」
-> 已完成（2026-08-15 第二轮收尾）：三个测试文件在克隆副本 <CLONE_DIR> 内全绿
-> （52 测试 / src per-file 100% 覆盖 / oxlint 0 / 包级与整棵 client tsc -b 通过），
-> 已同步回本仓库、补齐双语文档并推送 GitHub。round2 交接与过程见
-> `MEMORY-progress-2026-08-15-settings-ui-round2.md`（已完成，保留作历史）。**
+> **插件安装 + 实机验证进行中（2026-08-15 第三轮）：源码克隆四注册 + 构建完成，
+> 独立实例验证到「设置页/popup 通过、真实委派子代理失败（agentOptions 路由未传到子代理 LLM，
+> 已定位根因待修复）」，桌面应用宿主插件注入（Part B）待做（先备份后动）。当前权威交接状态见
+> `MEMORY-progress-2026-08-15-install-verification.md`（新窗口必读）。**
+> 前两轮（round1/round2 代码+测试+文档+推送）已完成并推送，历史已脱敏。
 
 - [x] 阶段 A（基础能力）：`tool-subagent` 支持按次调用传入 `agentOptions`（provider/model/maxTokens），
       按 `SubagentCapabilities.agentOptions` 能力开关校验；进程外提供方拒绝（UNSUPPORTED_CAPABILITY）。
