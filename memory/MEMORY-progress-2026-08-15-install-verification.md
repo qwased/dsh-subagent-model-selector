@@ -111,6 +111,9 @@ corepack pnpm dsh web *> <VERIFY_HOME>\dsh-web.log
 # 停止：按端口找 PID 后 Stop-Process（先杀占用 3080 的进程）
 ```
 > 旧窗口遗留：后台 job（pwsh-9）曾用 `Select-Object -First 40` 起实例导致日志丢失——新窗口用 `*>` 重定向。
+> **注意：服务端子进程可独立于启动它的后台任务存活**（启动器 node 退出后，PID 仍可能监听 3080）。
+> 新窗口先探测 `http://127.0.0.1:3080`（HTTP 200 即实例存活），再决定是否重启；实例状态以
+> 探测为准，不要依赖后台任务状态。停止实例：`Get-NetTCPConnection -LocalPort 3080` 找 PID 后 Stop-Process。
 > 新窗口的 Playwright 是全新会话，需重新导航 http://127.0.0.1:3080（首次可能弹「内测声明」「API Key」对话框，
 > 点「继续」/「稍后配置」）。
 
