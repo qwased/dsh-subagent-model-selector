@@ -30,6 +30,10 @@ Status: implemented
 
 `@deepseek-ai/dsh-client-ui-subagent-model` 把宿主的 `/subagent-model` 命令装饰为 `popupSelect`。选项来自会话的模型目录（`session.models`），因此选项框始终与已配置的供应商同步；每行在 label 行显示显示名称，在 detail 行显示 `提供商 · 模型ID`，与当前 pin（从 `model-roles` 投影读取）匹配的行标为选中。选择一行会执行宿主命令行，因此手动带参调用不受影响。被寻址的子代理会话不显示选项框。
 
+### 模型角色设置页
+
+浏览器侧还会注册一个 **「子代理模型」设置部分**（`settings.section`，id `model-roles`，order 20），管理路由插件读取的同一个 `model-roles` 命名空间。它枚举会话无关的模型目录（`llm.models`——与「模型」设置页同源），把每行与其存储的角色连接起来，并通过带 `expectedRevision` 的 `settings.mutate` 写入，因此并发编辑会被拒绝而不是静默覆盖。该部分位于可选子纤程 `['slots', 'locale', 'connection', 'remote']` 内：未组合设置 shell 的组合仍只获得 popup 装饰，别无其他；只读的设置提供方会禁用全部写入控件。宿主插件监听自己的命名空间，因此保存一行立即生效；推送失效（仅 `model-roles` 命名空间的 `settings/document-updated`、`llm/adapters-updated`、`connection/reset`）会在页面至少加载过一次后重新拉取。
+
 ### 全局挂载
 
 `packages/bundle/base` 同时挂载 `model-roles` 与 `client-ui-subagent-model`，使每个 profile（含 headless）都获得路由接缝；`web-app` 为 web profile 添加浏览器侧。
@@ -41,11 +45,11 @@ Status: implemented
 
 ## 测试
 
-`tool-subagent` 测试覆盖逐次合并、逐次拒绝、挂载期拒绝与 schema 暴露。`model-roles` 测试覆盖 pin 折叠、`set` 的 commit/queue/noop、排队清除路径、pre-step 刷新与路由指引段落。REAL-composition 套件通过 Loader 启动一个 cordis.yml，包含设置提供方、循环主干、命令、会话投影与 model-roles，然后通过 mock adapter 驱动模型可见的系统提示，并通过真实命令注册表驱动 `/subagent-model` 命令。`client-ui-subagent-model` 测试覆盖选项行、选中标记、命令执行与失败分支（会话已死、模型目录失败、命令未被接纳）。subagent、sdk/server 与 workflow 测试套件中的 `SubagentCapabilities` 字面量均已更新；Codex 与 Claude Code 的 loader-composition e2e 断言 `agentOptions: false`。
+`tool-subagent` 测试覆盖逐次合并、逐次拒绝、挂载期拒绝与 schema 暴露。`model-roles` 测试覆盖 pin 折叠、`set` 的 commit/queue/noop、排队清除路径、pre-step 刷新与路由指引段落。REAL-composition 套件通过 Loader 启动一个 cordis.yml，包含设置提供方、循环主干、命令、会话投影与 model-roles，然后通过 mock adapter 驱动模型可见的系统提示，并通过真实命令注册表驱动 `/subagent-model` 命令。`client-ui-subagent-model` 测试覆盖选项行、选中标记、命令执行与失败分支（会话已死、模型目录失败、命令未被接纳），以及设置页的部分注册（id/order/随 locale 变化的 label）、HMR 重注册、推送失效路由与逐模型的草稿/保存/清除流程（含只读、空描述拦截与写入失败分支）。subagent、sdk/server 与 workflow 测试套件中的 `SubagentCapabilities` 字面量均已更新；Codex 与 Claude Code 的 loader-composition e2e 断言 `agentOptions: false`。
 
 ## 后果
 
 - 进程外提供方（ACP、Codex、Claude Code、dsh-sdk）会明确拒绝逐子代路由；当前只有进程内 `spawn`/`fork` 支持路由。
 - pin 与候选清单是建议性的：模型可以忽略它们。确定性强制已延期。
 - 角色路由不针对 LLM 注册表校验；命名未注册路由的 pin 或角色会在委派时失败（`NO_ADAPTER`）。
-- 选项框列出所有已配置模型，不区分其 `subagent` 开关；专用 pin RPC（让选择器能拒绝 `subagent: false` 模型）已延期。
+- 设置页负责编辑每个模型的 `subagent` 开关（自动指派指引会尊重它），但选项框仍列出所有已配置模型，不区分该开关；专用 pin RPC（让选择器能拒绝 `subagent: false` 模型）已延期。

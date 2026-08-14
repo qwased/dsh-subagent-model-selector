@@ -7,6 +7,7 @@
 ## 功能
 
 - **能力描述 + 指派开关**：为每个模型描述其擅长领域，并用 `subagent` 开关控制是否可被自动指派。
+- **设置页管理角色**：在「设置 → 子代理模型」页为每个模型维护能力描述与开关，与模型目录同步、保存即生效（热更新，无需重启）。
 - **会话内指定优先**：用户指定的供应商/模型优先于自动指派。
 - **按描述自动指派**：未指定时，委派模型按候选描述自行选择。
 - **软执行**：固定路由与候选清单写入系统提示，由模型在每次调用时携带 `agentOptions`。
@@ -19,7 +20,7 @@
 | 包 | 角色 | 内容 |
 | --- | --- | --- |
 | `@deepseek-ai/dsh-model-roles` | 宿主插件 | `model-roles` settings 命名空间、会话 pin 事件、系统提示段、`/subagent-model` 命令、会话投影单元 |
-| `@deepseek-ai/dsh-client-ui-subagent-model` | 浏览器 UI | 把 `/subagent-model` 装饰为 popupSelect，三要素展示 + 供应商同步 + 当前 pin 选中标记 |
+| `@deepseek-ai/dsh-client-ui-subagent-model` | 浏览器 UI | 把 `/subagent-model` 装饰为 popupSelect（三要素展示 + 供应商同步 + 当前 pin 选中标记），并注册「子代理模型」设置页（能力描述 + 自动指派开关） |
 
 ```
 DSH-subagent-selector/
@@ -34,7 +35,8 @@ DSH-subagent-selector/
 ## 快速使用
 
 1. 在 settings.yaml 中注册供应商与模型（参考各供应商适配器文档）。
-2. 为模型补充角色描述与指派开关：
+2. 为模型补充角色描述与指派开关——在「设置 → 子代理模型」页填写，或直接编辑
+   settings.yaml：
 
 ```yaml
 model-roles:

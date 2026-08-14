@@ -15,10 +15,11 @@ export const name = 'client-ui-subagent-model-invariant'
 export const inject = ['invariants']
 
 /**
- * No runtime invariant: a single /subagent-model popupSelect decoration whose
- * disposal is proven by the HMR-safety spec — the plugin owns no store (the
- * current pin arrives on the `model-roles` session projection), emits no
- * cordis events, and holds no cross-plugin mutable state.
+ * No runtime invariant: a /subagent-model popupSelect decoration plus a
+ * settings.section page, both registered in optional fibers whose disposal is
+ * proven by the HMR-safety specs — the plugin owns no module-level store (the
+ * settings page store is created per apply closure), emits no cordis events,
+ * and holds no cross-plugin mutable state.
  */
 const install: InvariantInstaller = () => {}
 

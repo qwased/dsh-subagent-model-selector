@@ -11,14 +11,20 @@
 
 ## 当前进度
 
-> **全部完成并在本地 Web GUI 实机验证通过（2026-08-14 晚）**。权威交接状态见 `MEMORY-progress-2026-08-14.md`。
-> 发布前校验（typecheck / oxlint / 覆盖门 / REAL-composition / 双语配对）已在本轮全部绿。
+> **popup 路由选择已完成并实机验证（2026-08-14 晚）；WebUI 设置选项卡「能力描述 + 子代理开关」
+> 已完成（2026-08-15 第二轮收尾）：三个测试文件在克隆副本 <CLONE_DIR> 内全绿
+> （52 测试 / src per-file 100% 覆盖 / oxlint 0 / 包级与整棵 client tsc -b 通过），
+> 已同步回本仓库、补齐双语文档并推送 GitHub。round2 交接与过程见
+> `MEMORY-progress-2026-08-15-settings-ui-round2.md`（已完成，保留作历史）。**
 
 - [x] 阶段 A（基础能力）：`tool-subagent` 支持按次调用传入 `agentOptions`（provider/model/maxTokens），
       按 `SubagentCapabilities.agentOptions` 能力开关校验；进程外提供方拒绝（UNSUPPORTED_CAPABILITY）。
 - [x] 阶段 B（model-roles 宿主插件）：settings 命名空间 + ctx.modelRoles 服务 + 系统提示段 + /subagent-model 命令 + 会话投影单元。
 - [x] 阶段 C（对话框 UI 控件）：`client-ui-subagent-model` popupSelect（三要素显示 + 供应商同步 + active 标记）。
 - [x] 阶段 D（部署接入）：base bundle 全局挂载 + web-app 挂 UI + 重启 + 本地 Web GUI 实机验证。
+- [x] 阶段 E（设置选项卡，已完成）：能力描述 + 子代理开关设置页——克隆内源码 + 三个测试
+      全绿（52 测试 / src per-file 100% 覆盖 / oxlint / 双 tsc -b），已同步回本仓库、
+      补齐文档并推送（见 round2 交接）。
 - [x] 发布前校验：model-roles REAL-composition 测试（Loader+cordis.yml+真实 commands）；
       两个新包 src per-file 100% 覆盖（含防御分支与 v8 ignore）；双语 README/Agent Note 配对。
 

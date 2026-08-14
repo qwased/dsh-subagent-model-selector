@@ -13,6 +13,10 @@
     { "path": "../runtime" },
     { "path": "../ui-commands" },
     { "path": "../ui-input-trigger" },
+    { "path": "../locale" },
+    { "path": "../ui-settings" },
+    { "path": "../ui-slots" },
+    { "path": "../web-react" },
     { "path": "../../subagent/model-roles" },
     { "path": "../../runtime-diagnostics/invariants" }
   ]

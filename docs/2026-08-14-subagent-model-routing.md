@@ -30,6 +30,10 @@ The same plugin registers a `model-roles` session-projection unit (whole-value f
 
 `@deepseek-ai/dsh-client-ui-subagent-model` decorates the host `/subagent-model` command with a `popupSelect`. Rows come from the session model directory (`session.models`), so the box stays in sync with the configured providers; each row shows the display name on the label line and `provider · model id` on the detail line, and the row matching the current pin (read from the `model-roles` projection) is marked active. Picking a row executes the host command line, so a manual argued invocation keeps working. Addressed subagent sessions expose no popup.
 
+### A settings page for model roles
+
+The browser half also registers a **Subagent Models** settings section (`settings.section`, id `model-roles`, order 20) that manages the same `model-roles` namespace the routing plugin reads. It enumerates the session-independent model directory (`llm.models` — the same source the Models settings page renders), joins each row with its stored role, and writes through `settings.mutate` with the expected revision, so a concurrent edit is refused rather than silently overwritten. The section lives in an optional child fiber over `['slots', 'locale', 'connection', 'remote']`: a composition without the settings shell keeps the popup decoration and nothing else, and a read-only settings provider disables every write control. The host plugin watches its namespace, so a saved row is effective immediately; pushed invalidations (`settings/document-updated` for the `model-roles` namespace only, `llm/adapters-updated`, `connection/reset`) refetch the page after it has loaded at least once.
+
 ### Global mounting
 
 `packages/bundle/base` mounts both `model-roles` and `client-ui-subagent-model` so every profile (headless included) gets the routing seam; `web-app` adds the browser half to the web profile.
@@ -41,11 +45,11 @@ The same plugin registers a `model-roles` session-projection unit (whole-value f
 
 ## Testing
 
-`tool-subagent` tests cover per-call merge, per-call rejection, mount-time rejection, and schema exposure. `model-roles` tests cover the pin fold, `set` commit/queue/noop, the queued-clear path, the pre-step flush, and the routing guidance section. A REAL-composition suite boots a cordis.yml through the Loader with the settings provider, the loop spine, commands, session projections, and model-roles, then drives the model-visible system prompt through a mock adapter and the `/subagent-model` command through the real command registry. `client-ui-subagent-model` tests cover the popup rows, the active marker, the command execution, and the failure arms (dead session, failed model directory, unadmitted command). `SubagentCapabilities` literals across the subagent, sdk/server, and workflow test suites are updated; the Codex and Claude Code loader-composition e2e asserts `agentOptions: false`.
+`tool-subagent` tests cover per-call merge, per-call rejection, mount-time rejection, and schema exposure. `model-roles` tests cover the pin fold, `set` commit/queue/noop, the queued-clear path, the pre-step flush, and the routing guidance section. A REAL-composition suite boots a cordis.yml through the Loader with the settings provider, the loop spine, commands, session projections, and model-roles, then drives the model-visible system prompt through a mock adapter and the `/subagent-model` command through the real command registry. `client-ui-subagent-model` tests cover the popup rows, the active marker, the command execution, the failure arms (dead session, failed model directory, unadmitted command), and — for the settings page — the section registration (id/order/locale-following label), HMR re-registration, pushed-invalidation routing, and the per-model draft/save/clear flows including read-only, empty-description blocking, and write-failure arms. `SubagentCapabilities` literals across the subagent, sdk/server, and workflow test suites are updated; the Codex and Claude Code loader-composition e2e asserts `agentOptions: false`.
 
 ## Consequences
 
 - Out-of-process providers (ACP, Codex, Claude Code, dsh-sdk) reject per-child routes loudly; routing works only on in-process `spawn`/`fork` today.
 - The pin and candidate list are advisory: a model can ignore them. Deterministic enforcement is deferred.
 - Role routes are not validated against the LLM registry; a pin or role naming an unregistered route fails at delegation (`NO_ADAPTER`).
-- The popup lists every configured model regardless of its `subagent` flag; a dedicated pin RPC (so the picker can refuse `subagent: false` models) is deferred.
+- The settings page edits each model's `subagent` switch (which the auto-assignment guidance honors), but the popup still lists every configured model regardless of that flag; a dedicated pin RPC (so the picker can refuse `subagent: false` models) is deferred.
