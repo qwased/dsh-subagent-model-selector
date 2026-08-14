@@ -1,0 +1,14 @@
+# Build outputs
+lib/
+dist/
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+dryrun.log.err
+
+# Local state
+*.local
