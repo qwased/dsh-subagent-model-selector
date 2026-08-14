@@ -49,7 +49,10 @@ export const Config: z<Config> = z.object({
 })
 
 const ModelRoleSchema: z<ModelRole> = z.object({
-  description: z.string().required(),
+  // A model excluded from auto-assignment (subagent: false) carries no routing
+  // prose; only checked candidates need a description, which the settings page
+  // enforces. Absence normalizes to '' so hand-written configs stay readable.
+  description: z.string().default(''),
   subagent: z.boolean().default(true),
 })
 
@@ -91,7 +94,12 @@ function routeCandidates(roles: ModelRolesSettings): RouteCandidate[] {
   const candidates: RouteCandidate[] = []
   for (const [provider, models] of Object.entries(roles)) {
     for (const [model, role] of Object.entries(models)) {
-      if (role.subagent) candidates.push({ provider, model, description: role.description })
+      // Only checked candidates with real routing prose join the guidance list:
+      // an excluded model never appears, and a hand-written `subagent: true`
+      // without a description has nothing for the delegating model to read.
+      if (role.subagent && role.description.trim() !== '') {
+        candidates.push({ provider, model, description: role.description })
+      }
     }
   }
   return candidates

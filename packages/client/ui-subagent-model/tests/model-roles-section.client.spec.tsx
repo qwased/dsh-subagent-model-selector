@@ -140,6 +140,24 @@ describe('ModelRolesSection drafts and writes', () => {
     expect(within(row).getByRole('button', { name: en.clear })).toHaveProperty('disabled', true)
   })
 
+  it('allows saving an excluded row (subagent off) with a blank description', async () => {
+    // A description is only meaningful for auto-assigned candidates: turning a
+    // model OFF as a subagent needs no prose, so the row must be saveable and
+    // must not nag about a missing description.
+    const { controller } = renderSection({ status: 'ready', rows: [ROW] })
+    const row = rowFor('Acme Flash')
+    fireEvent.click(within(row).getByRole('checkbox'))
+    expect(within(row).queryByText(en.descriptionRequired)).toBeNull()
+    expect(within(row).getByRole('button', { name: en.save })).not.toHaveProperty('disabled', true)
+    fireEvent.click(within(row).getByRole('button', { name: en.save }))
+
+    expect(controller.saveRole).toHaveBeenCalledWith('acme', 'acme-flash', {
+      description: '',
+      subagent: false,
+    })
+    await waitFor(() => { expect(screen.getByText(en.saved)).toBeTruthy() })
+  })
+
   it('saves an edited description and switch through the controller and shows the saved notice', async () => {
     const { controller } = renderSection({ status: 'ready', rows: [ROW] })
     const row = rowFor('Acme Flash')

@@ -106,12 +106,16 @@ function ModelRoleRow({ row, readOnly, t, controller, onSaved, onEdit }: ModelRo
   const [saving, setSaving] = useState(false)
   const [failure, setFailure] = useState<string | undefined>(undefined)
   const descriptionBlank = value.description.trim() === ''
-  const saveable = !readOnly && !saving && !descriptionBlank
+  // A description is only meaningful for auto-assigned subagent candidates.
+  // Excluding a model (subagent off) needs no prose, so a blank description
+  // only blocks a checked row.
+  const descriptionRequired = descriptionBlank && value.subagent
+  const saveable = !readOnly && !saving && !descriptionRequired
   const clearable = !readOnly && !saving && (row.role !== undefined || dirty)
 
   const save = (): void => {
     /* v8 ignore next -- the button only renders enabled when saveable */
-    if (saving || descriptionBlank) return
+    if (saving || descriptionRequired) return
     setSaving(true)
     setFailure(undefined)
     void controller.saveRole(row.provider, row.model, {
@@ -184,7 +188,7 @@ function ModelRoleRow({ row, readOnly, t, controller, onSaved, onEdit }: ModelRo
         />
         <span>{t('allowSubagent')}</span>
       </label>
-      {descriptionBlank && !readOnly ? <p className={styles['validation']}>{t('descriptionRequired')}</p> : null}
+      {descriptionRequired && !readOnly ? <p className={styles['validation']}>{t('descriptionRequired')}</p> : null}
       {failure !== undefined ? <p className={styles['error']}>{`${t('writeFailed')}: ${messageOf(failure)}`}</p> : null}
       <div className={styles['rowActions']}>
         <button
