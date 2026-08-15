@@ -177,8 +177,17 @@
 
 **5.5 最终状态**
 - selector 仓库（<SELECTOR_DIR>）已推送：插件 UX 修复（3 文件）+ 第五轮记忆（脱敏）。
-- `<CLONE_DIR>` harness 侧改动仍本地未提交（tool-subagent agentOptions、事件目录重生成等，
-  是否上流由后续窗口决定）。
+- harness 侧 A 类修复（`tool-subagent` agentOptions 透传，仅 2 文件）已在 <CLONE_DIR>
+  提交于分支 **`fix/tool-subagent-agentoptions`（57ea25e）**，并推送到 fork
+  **`qwased/deepseek-harness`**（公开，可解析）。
+- **PR 创建被 GitHub 拦截**：`gh pr create`/REST `POST /pulls` 均失败——
+  GraphQL `FORBIDDEN: qwased does not have the correct permissions to execute CreatePullRequest`，
+  REST 404。分支/compare 均正常（compare URL HTTP 200）。疑似 deepseek-ai 组织限制或账号风控。
+  待办：用浏览器打开
+  `https://github.com/deepseek-ai/deepseek-harness/compare/master...qwased:fix/tool-subagent-agentoptions`
+  手动创建 PR（标题/正文已备好，见分支 commit message）。
+- `<CLONE_DIR>` 其余 B 类改动（bundle 注册、api-proxy 命名空间、事件目录重生成、tsconfig/lock、
+  两个插件包）仍本地未提交；是否随 PR 收编进 harness 由产品决定。
 - 桌面应用保持注入状态运行；回退方案见备份目录 README。
 
 ## 起/停 <VERIFY_HOME> 实例（新窗口操作）
